@@ -1,50 +1,47 @@
 # 🤖 AI Task Management Agent
 
-An AI-powered task management application that allows users to manage tasks using natural language. Built with Python, LangChain, FastAPI, Groq LLM, and Microsoft SQL Server.
+An AI-powered task management application that uses natural language to interact with task records. Built with Python, LangChain, Groq LLM, FastAPI, SQLAlchemy, and Microsoft SQL Server.
 
-The application combines the reasoning capabilities of an LLM with real API operations, allowing the AI agent to retrieve, analyze, create, update, and delete task records.
+The application connects an LLM to real backend APIs through LangChain tools, enabling users to retrieve, create, update, and delete tasks using natural-language requests.
 
 ## ✨ Features
 
-- 💬 **Natural Language Interaction** — Ask questions about tasks using everyday English.
-- 🧠 **LLM-Powered Reasoning** — Uses a Groq-hosted language model to understand user requests.
-- 🛠️ **AI Tool Calling** — Uses LangChain tools to connect the LLM to application APIs.
-- 📋 **Task Retrieval** — Retrieve tasks and filter results by status.
-- ➕ **Create Tasks** — Create tasks through API operations.
-- ✏️ **Update Tasks** — Update task details and statuses.
+- 🧠 **LLM Integration** — Uses Groq to understand user requests and generate responses.
+- 🛠️ **LangChain Tool Calling** — Connects AI reasoning to Python functions and backend APIs.
+- 📋 **Task Retrieval** — Retrieve task records and filter them by status.
+- ➕ **Create Tasks** — Create tasks through natural-language requests.
+- ✏️ **Update Tasks** — Update task details or status.
 - 🗑️ **Delete Tasks** — Delete tasks by ID.
-- 🔗 **REST API Integration** — FastAPI provides endpoints for task operations.
-- 🗄️ **Database Integration** — SQLAlchemy connects Python to SQL Server.
-- 🛡️ **Environment-Based Configuration** — Store API keys and sensitive configuration outside source code.
+- 🚀 **REST APIs** — FastAPI provides endpoints for task operations.
+- 🗄️ **SQL Server Integration** — Store and retrieve task data using SQLAlchemy.
+- ✅ **Request Validation** — Validate task input using Pydantic schemas.
+- 🔐 **Environment Configuration** — Keep API keys and sensitive configuration outside source control.
 
-## 🏗️ Technology Stack
+## 🧰 Technology Stack
 
 | Technology | Purpose |
 |---|---|
-| Python | Application and agent logic |
-| LangChain | Agent creation and tool calling |
-| Groq LLM | Natural language understanding and response generation |
+| Python | Application and AI agent logic |
+| LangChain | Agent orchestration and tool calling |
+| Groq LLM | Natural-language understanding and responses |
 | FastAPI | REST API development |
 | SQLAlchemy | Database connectivity and ORM |
 | Microsoft SQL Server | Task data storage |
-| Pydantic | Request validation and data schemas |
-| Requests | HTTP communication between tools and API |
-| Uvicorn | ASGI application server |
-| python-dotenv | Load environment variables |
+| Pydantic | Input validation and schemas |
+| Requests | HTTP communication with the backend API |
+| Uvicorn | Runs the FastAPI application |
+| python-dotenv | Loads environment variables |
 
-## 🔄 Architecture
+## 🏗️ Architecture
 
 ```text
 User
   |
   v
-LangChain Agent
+LangChain Agent / LLM
   |
   v
-Groq LLM
-  |
-  v
-Selects an Appropriate Tool
+Selects a Tool
   |
   v
 Python @tool Function
@@ -59,41 +56,40 @@ SQLAlchemy
 Microsoft SQL Server
   |
   v
-API Result -> Agent -> Natural Language Response
+API Result -> LLM -> User Response
 ```
 
-The LLM interprets the request and decides which tool to use. The tools call the backend API, which accesses the database. The LLM then explains the returned results.
+The LLM interprets the user's request and can select an appropriate tool. The tool calls the FastAPI backend, which retrieves or modifies database records. The agent uses the returned result to formulate its response.
 
 ## 📁 Project Structure
 
 ```text
 AI-Task-Management-Agent/
 │
-├── app/
-│   ├── __init__.py
-│   ├── main.py
-│   ├── database.py
-│   ├── dependencies.py
-│   ├── models.py
-│   ├── schemas.py
-│   └── tools.py
+├── .venv/                 # Local Python environment (not committed)
 │
-├── agent.py
-├── .env.example
+├── app/
+│   ├── __pycache__/       # Generated Python cache (not committed)
+│   ├── __init__.py
+│   ├── database.py        # SQLAlchemy database connection
+│   ├── dependencies.py    # FastAPI database dependencies
+│   ├── llm.py             # LLM / agent logic
+│   ├── main.py            # FastAPI application and task APIs
+│   ├── models.py          # Database-first SQLAlchemy models
+│   ├── schemas.py         # Pydantic request schemas
+│   └── tools.py           # LangChain tools for task operations
+│
+├── .env                   # Local secrets (not committed)
 ├── .gitignore
-├── requirements.txt
-└── README.md
+├── README.md
+└── requirements.txt
 ```
-
-*Note: Adjust the agent filename or file list if your actual project structure differs.*
 
 ## ⚙️ Prerequisites
 
-Install or configure the following before running the application:
-
-- Python 3.11 or a compatible version supported by your dependencies.
+- Python 3.11 or another version supported by the installed dependencies.
 - Microsoft SQL Server.
-- SQL Server ODBC Driver 18.
+- Microsoft ODBC Driver 18 for SQL Server, or the driver configured in your application.
 - A Groq API key.
 - Git.
 
@@ -124,128 +120,128 @@ Activate it on Windows PowerShell:
 pip install -r requirements.txt
 ```
 
-### 4. Configure environment variables
+### 4. Configure the environment
 
-Create a `.env` file in the project root using `.env.example` as a template.
+Create a `.env` file in the project root and configure your Groq API key:
 
 ```dotenv
 GROQ_API_KEY=your_groq_api_key_here
 ```
 
-Replace the placeholder with your own API key. Never commit your real `.env` file to GitHub.
+Replace the placeholder with your own key. Never commit your real `.env` file.
 
-### 5. Configure the database
+### 5. Configure SQL Server
 
-Create or configure the `AITaskAssistantDB` database and the required `Tasks` table in Microsoft SQL Server.
+Configure the connection settings in `app/database.py` for your local SQL Server instance and database.
 
-Update the database connection settings in `app/database.py` to match your local SQL Server instance.
+The project uses a database-first approach. The existing database schema is the source of truth, and the SQLAlchemy models in `app/models.py` are generated from the existing database.
 
-The application uses a database-first approach: the existing database schema is the source of truth, and the SQLAlchemy model is generated from that schema.
+Ensure the database and `Tasks` table exist before starting the backend.
 
-### 6. Start the FastAPI server
+### 6. Start the FastAPI backend
 
-Open a terminal in the project root:
+From the project root, run:
 
 ```bash
 uvicorn app.main:app --reload
 ```
 
-The API will be available at:
+The API runs at:
 
-`http://127.0.0.1:8000`
+- Base URL: `http://127.0.0.1:8000`
+- Swagger documentation: `http://127.0.0.1:8000/docs`
 
-Interactive API documentation:
-
-`http://127.0.0.1:8000/docs`
+Keep this terminal running.
 
 ### 7. Run the AI agent
 
-Keep the FastAPI server running. Open a second terminal, activate the virtual environment, and run:
+Open a second terminal, activate the virtual environment, and run:
 
-```bash
-python agent.py
+```powershell
+python -m app.llm
 ```
 
-Replace `agent.py` with your actual agent filename if it differs.
+This assumes `app/llm.py` contains a runnable entry point. If the file uses a different execution pattern, use the command appropriate to its implementation.
 
 ## 🔌 REST API Endpoints
 
-| Method | Endpoint | Description |
+The core task operations are:
+
+| Method | Endpoint | Purpose |
 |---|---|---|
 | GET | `/api/tasks` | Retrieve all tasks |
 | GET | `/api/tasks/{task_id}` | Retrieve a task by ID |
 | POST | `/api/tasks` | Create a task |
-| PATCH | `/api/tasks/{task_id}` | Partially update a task |
+| PATCH | `/api/tasks/{task_id}` | Update selected task fields |
 | DELETE | `/api/tasks/{task_id}` | Delete a task |
 
-A `PUT /api/tasks/{task_id}` endpoint may also be available if full task replacement is retained in your implementation.
+If the optional PUT endpoint remains in your backend, it can also be used to replace a task's editable fields.
 
-### Example: Create a Task
-
-**POST** `/api/tasks`
-
-```json
-{
-  "title": "Learn LangChain",
-  "description": "Understand agents and tool calling",
-  "dueDateUtc": "2026-10-30T12:00:00",
-  "status": "Pending"
-}
-```
-
-Valid task statuses:
+### Supported task statuses
 
 - `Pending`
 - `InProgress`
 - `Completed`
 
-## 💡 Example AI Requests
+### Example request: Create a task
 
-The agent is designed to understand requests such as:
+**POST** `/api/tasks`
+
+```json
+{
+  "title": "Learn LangChain tools",
+  "description": "Connect AI tools to task APIs",
+  "dueDateUtc": "2026-10-30T12:00:00",
+  "status": "Pending"
+}
+```
+
+## 💬 Example Natural-Language Requests
 
 - "Show me all tasks."
 - "Give me the tasks whose status is Completed."
-- "Show me the details of task 1."
+- "Show me task 1."
 - "Create a task to learn Azure."
 - "Mark task 3 as Completed."
 - "Change the title of task 2."
 - "Delete task 5."
 
-For task-related answers, the agent should use the appropriate retrieval tool to obtain real records rather than inventing task information.
+For task-related questions, the agent should retrieve the real task data through the backend tools instead of inventing records.
 
-## 🔐 Security Considerations
+## 🔐 Security
 
-- Store API keys in environment variables.
-- Never commit `.env`, database credentials, or other secrets.
-- Add `.env` and `.venv/` to `.gitignore`.
-- Validate all incoming API requests.
-- Handle API failures and database errors safely.
-- Require authorization and authentication before exposing the application beyond local development.
-- Protect destructive operations such as task deletion.
+- Keep API keys and database credentials in environment variables.
+- Never commit `.env` or other secret files.
+- Add `.env`, `.venv/`, and `__pycache__/` to `.gitignore`.
+- Validate incoming API requests.
+- Handle API and database errors safely.
+- Add authentication and authorization before exposing the application to external users.
+- Treat delete operations as destructive actions.
 
 ## 🛣️ Future Enhancements
 
-- Angular-based chat interface.
+- Angular chat interface.
 - User authentication and role-based access control.
 - Due-date reminders and overdue task detection.
 - Conversation memory.
-- Retrieval-Augmented Generation (RAG) for task documentation.
-- Docker-based deployment.
-- Automated testing and CI/CD with GitHub Actions.
+- Retrieval-Augmented Generation (RAG).
+- Docker containerization.
+- GitHub Actions CI/CD.
 - Azure deployment and monitoring.
+- Automated unit and integration tests.
 
-## 🎯 Learning Objectives
+## 🎯 Learning Outcomes
 
 This project demonstrates practical experience with:
 
 - LLM integration using Groq.
 - LangChain agents and custom tools.
-- AI-to-REST API integration.
-- FastAPI application development.
-- SQL Server database access with SQLAlchemy.
-- Request validation and error handling.
-- Secure environment configuration.
-- Git and GitHub workflow.
+- AI tool calling and REST API integration.
+- FastAPI backend development.
+- SQL Server access with SQLAlchemy.
+- Pydantic validation and error handling.
+- Environment-based configuration.
+- Git and GitHub workflows.
 
 ## 👨‍💻 Author
 
@@ -255,4 +251,4 @@ GitHub: [Prasanth-Pali](https://github.com/Prasanth-Pali)
 
 ---
 
-*Built as a practical project to explore AI agents, tool calling, and real-world backend integration.*
+*Built to explore practical AI agents, tool calling, and backend integration.*
